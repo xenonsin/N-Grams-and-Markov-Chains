@@ -105,8 +105,8 @@ public class TextParser extends JFrame
         blank2.setLayout(new BoxLayout(blank2, BoxLayout.Y_AXIS));
         JLabel keno = new JLabel("Keno San Pablo");
         blank2.add(keno);
-        JLabel leech = new JLabel("Lucky Guy");
-        blank2.add(leech);
+        JLabel byron = new JLabel("Byron Phung");
+        blank2.add(byron);
         add(blank2);
         //Frequencies
 
