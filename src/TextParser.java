@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -254,7 +255,7 @@ public class TextParser extends JFrame
         SortWordsByFrequency(bigramArray, sortedBigramByFrequencyArray, bigramMap, 2);
         AppendToTextArea(sortedBigramByFrequencyArray, taBigramFrequency);
         ConstructRandomSentence(bigramArray, bigramMap, taBigramSample, 100);
-        CalculatePerplexity(bigramArray, sortedBigramByFrequencyArray, taBigramPerplexity, "Bigram Perplexity: ");
+        //CalculatePerplexity(bigramArray, sortedBigramByFrequencyArray, taBigramPerplexity, "Bigram Perplexity: ");
 
         //printMap(bigramMap);
         //bigramArray.forEach(System.out::println);
@@ -266,7 +267,7 @@ public class TextParser extends JFrame
         SortWordsByFrequency(trigramArray, sortedTrigramByFrequencyArray, trigramMap, 3);
         AppendToTextArea(sortedTrigramByFrequencyArray, taTrigramFrequency);
         ConstructRandomSentence(trigramArray, trigramMap, taTrigramSample, 100);
-        CalculatePerplexity(trigramArray, sortedTrigramByFrequencyArray, taTrigramPerplexity, "Trigram Perplexity: ");
+        //CalculatePerplexity(trigramArray, sortedTrigramByFrequencyArray, taTrigramPerplexity, "Trigram Perplexity: ");
 
         //printMap(trigramMap);
     }
@@ -399,8 +400,9 @@ public class TextParser extends JFrame
     {
         //list.forEach(System.out::println);
         Random rand = new Random();
+        //System.out.println(list.size());
+
         int i = rand.nextInt(list.size());
-        //System.out.println(list.get(i));
         return list.get(i);
     }
 
@@ -416,17 +418,21 @@ public class TextParser extends JFrame
 
     public void CalculatePerplexity(ArrayList<String> source, ArrayList<Word> sortedFrequency, JLabel label, String base)
     {
-        double probability = 1;
+        double probability = 0;
         int perplexity = 0;
         double totalValues = source.size();
 
         for (Word word : sortedFrequency)
         {
-            probability *= ((double)word.count / totalValues);
-            System.out.println(probability);
+            probability += Math.log(word.count/totalValues);
         }
 
-        perplexity = (int)Math.pow(probability, (-1d / totalValues));
+        //BigDecimal a = new BigDecimal(Math.exp(probability));
+
+        probability *= (-1/totalValues);
+        //System.out.println(probability);
+
+        perplexity = (int)Math.pow(10, probability);
 
         label.setText(base + perplexity);
     }

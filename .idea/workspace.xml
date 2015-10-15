@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5e6b03a-d2eb-45de-852f-c8fea85f3966" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/N Grams and Markov Chains/BigFunctions.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sd.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/N Grams and Markov Chains/TextParser$Word.class" afterPath="$PROJECT_DIR$/out/production/N Grams and Markov Chains/TextParser$Word.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/N Grams and Markov Chains/TextParser.class" afterPath="$PROJECT_DIR$/out/production/N Grams and Markov Chains/TextParser.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/TextParser.java" afterPath="$PROJECT_DIR$/src/TextParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="N Grams and Markov Chains.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,18 +33,25 @@
       <file leaf-file-name="TextParser.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/TextParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.757085">
-              <caret line="430" column="41" selection-start-line="430" selection-start-column="41" selection-end-line="430" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.6417004">
+              <caret line="403" column="0" selection-start-line="403" selection-start-column="0" selection-end-line="403" selection-end-column="0" />
               <folding>
-                <element signature="e#9923#9931#0" expanded="true" />
-                <element signature="e#11014#11015#0" expanded="true" />
-                <element signature="e#11108#11109#0" expanded="true" />
+                <element signature="e#9956#9964#0" expanded="true" />
+                <element signature="e#11047#11048#0" expanded="true" />
+                <element signature="e#11141#11142#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -52,6 +64,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/src/BigFunctions.java" />
         <option value="$PROJECT_DIR$/src/TextParser.java" />
       </list>
     </option>
@@ -423,12 +436,12 @@
       <option name="number" value="Default" />
       <updated>1444922393319</updated>
       <workItem from="1444922397634" duration="69000" />
-      <workItem from="1444933116123" duration="6958000" />
+      <workItem from="1444933116123" duration="12247000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7027000" />
+    <option name="totallyTimeSpent" value="12316000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="886" extended-state="6" />
@@ -477,9 +490,9 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#9923#9931#0" expanded="true" />
-            <element signature="e#11014#11015#0" expanded="true" />
-            <element signature="e#11108#11109#0" expanded="true" />
+            <element signature="e#9956#9964#0" expanded="true" />
+            <element signature="e#11047#11048#0" expanded="true" />
+            <element signature="e#11141#11142#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -494,12 +507,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/TextParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.757085">
-          <caret line="430" column="41" selection-start-line="430" selection-start-column="41" selection-end-line="430" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.6417004">
+          <caret line="403" column="0" selection-start-line="403" selection-start-column="0" selection-end-line="403" selection-end-column="0" />
           <folding>
-            <element signature="e#9923#9931#0" expanded="true" />
-            <element signature="e#11014#11015#0" expanded="true" />
-            <element signature="e#11108#11109#0" expanded="true" />
+            <element signature="e#9956#9964#0" expanded="true" />
+            <element signature="e#11047#11048#0" expanded="true" />
+            <element signature="e#11141#11142#0" expanded="true" />
           </folding>
         </state>
       </provider>
