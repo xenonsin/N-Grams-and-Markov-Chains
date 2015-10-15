@@ -29,18 +29,28 @@ public class TextParser extends JFrame
     private JTextArea taBigramFrequency;
     private JTextArea taTrigramFrequency;
 
+    private JLabel taUnigramPerplexity;
+    private JLabel taBigramPerplexity;
+    private JLabel taTrigramPerplexity;
+
     private JTextArea taUnigramSample;
     private JTextArea taBigramSample;
     private JTextArea taTrigramSample;
 
+    private String SENTENCE_END_TOKEN = " KLK";
+
     private ArrayList<String> wordsArray = new ArrayList<>();
     private ArrayList<Word> sortedWordsByFrequencyArray = new ArrayList<>();
+    Map<String, ArrayList<String>> unigramMap = new HashMap<>();
+
 
     private ArrayList<String> bigramArray = new ArrayList<>();
     private ArrayList<Word> sortedBigramByFrequencyArray = new ArrayList<>();
+    Map<String, ArrayList<String>> bigramMap = new HashMap<>();
 
     private ArrayList<String> trigramArray = new ArrayList<>();
     private ArrayList<Word> sortedTrigramByFrequencyArray = new ArrayList<>();
+    Map<String, ArrayList<String>> trigramMap = new HashMap<>();
 
     private JFileChooser fc;
 
@@ -103,6 +113,8 @@ public class TextParser extends JFrame
         panel2.setLayout(new BoxLayout(panel2, BoxLayout.Y_AXIS));
         JLabel label2= new JLabel("Unigram Frequency");
         panel2.add(label2);
+        taUnigramPerplexity = new JLabel("Unigram Perplexity:");
+        panel2.add(taUnigramPerplexity);
         taUnigramFrequency = new JTextArea ();
         taUnigramFrequency.setEditable(false);
         JScrollPane scroll = new JScrollPane (taUnigramFrequency,
@@ -115,6 +127,8 @@ public class TextParser extends JFrame
         panel3.setLayout(new BoxLayout(panel3, BoxLayout.Y_AXIS));
         JLabel label3= new JLabel("Bigram Frequency");
         panel3.add(label3);
+        taBigramPerplexity = new JLabel("Bigram Perplexity:");
+        panel3.add(taBigramPerplexity);
         taBigramFrequency = new JTextArea ();
         taBigramFrequency.setEditable(false);
         JScrollPane scroll3 = new JScrollPane (taBigramFrequency,
@@ -126,6 +140,8 @@ public class TextParser extends JFrame
         panel4.setLayout(new BoxLayout(panel4, BoxLayout.Y_AXIS));
         JLabel label4= new JLabel("Trigram Frequency");
         panel4.add(label4);
+        taTrigramPerplexity = new JLabel("Trigram Perplexity:");
+        panel4.add(taTrigramPerplexity);
         taTrigramFrequency = new JTextArea ();
         taTrigramFrequency.setEditable(false);
         JScrollPane scroll4 = new JScrollPane (taTrigramFrequency,
@@ -141,6 +157,7 @@ public class TextParser extends JFrame
         panel5.add(label5);
         taUnigramSample = new JTextArea ();
         taUnigramSample.setEditable(false);
+        taUnigramSample.setLineWrap(true);
         JScrollPane scroll5 = new JScrollPane (taUnigramSample,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel5.add(scroll5);
@@ -152,6 +169,7 @@ public class TextParser extends JFrame
         panel6.add(label6);
         taBigramSample = new JTextArea ();
         taBigramSample.setEditable(false);
+        taBigramSample.setLineWrap(true);
         JScrollPane scroll6 = new JScrollPane (taBigramSample,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel6.add(scroll6);
@@ -163,6 +181,7 @@ public class TextParser extends JFrame
         panel7.add(label7);
         taTrigramSample = new JTextArea ();
         taTrigramSample.setEditable(false);
+        taTrigramSample.setLineWrap(true);
         JScrollPane scroll7 = new JScrollPane (taTrigramSample,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel7.add(scroll7);
@@ -193,9 +212,12 @@ public class TextParser extends JFrame
             BufferedReader bufRead = new BufferedReader(fr);
             String temp = null;
 
+
+
             while ( (temp = bufRead.readLine()) != null)
             {
                 temp = temp.trim();
+                temp=temp.replaceAll("\\.", SENTENCE_END_TOKEN);
                 temp = temp.replaceAll("\\p{P}+", " ");
                 temp = temp.replaceAll("\\r\\n|\\r|\\n", " ");
                 String[] tArray = temp.split(" +");
@@ -208,11 +230,14 @@ public class TextParser extends JFrame
             }
             GetWordCount();
             GetLongestWord();
-            SortWordsByFrequency(wordsArray, sortedWordsByFrequencyArray);
+            SortWordsByFrequency(wordsArray, sortedWordsByFrequencyArray, unigramMap, 1);
             GetMostUsedWord();
             GetDistinctWordCount();
-            AppendToTextArea(sortedWordsByFrequencyArray,taUnigramFrequency);
+            AppendToTextArea(sortedWordsByFrequencyArray, taUnigramFrequency);
+            ConstructRandomSentence(wordsArray, unigramMap, taUnigramSample, 100);
+            CalculatePerplexity(wordsArray,sortedWordsByFrequencyArray,taUnigramPerplexity,"Unigram Perplexity: ");
 
+            //printMap(unigramMap);
             //wordsArray.forEach(System.out::println);
 
             fr.close();
@@ -226,17 +251,24 @@ public class TextParser extends JFrame
     private void ParseBigram()
     {
         bigramArray = ngrams(2, wordsArray);
-        SortWordsByFrequency(bigramArray,sortedBigramByFrequencyArray);
+        SortWordsByFrequency(bigramArray, sortedBigramByFrequencyArray, bigramMap, 2);
         AppendToTextArea(sortedBigramByFrequencyArray, taBigramFrequency);
+        ConstructRandomSentence(bigramArray, bigramMap, taBigramSample, 100);
+        CalculatePerplexity(bigramArray, sortedBigramByFrequencyArray, taBigramPerplexity, "Bigram Perplexity: ");
 
+        //printMap(bigramMap);
         //bigramArray.forEach(System.out::println);
     }
 
     private void ParseTrigram()
     {
         trigramArray = ngrams(3, wordsArray);
-        SortWordsByFrequency(trigramArray,sortedTrigramByFrequencyArray);
+        SortWordsByFrequency(trigramArray, sortedTrigramByFrequencyArray, trigramMap, 3);
         AppendToTextArea(sortedTrigramByFrequencyArray, taTrigramFrequency);
+        ConstructRandomSentence(trigramArray, trigramMap, taTrigramSample, 100);
+        CalculatePerplexity(trigramArray, sortedTrigramByFrequencyArray, taTrigramPerplexity, "Trigram Perplexity: ");
+
+        //printMap(trigramMap);
     }
 
     public static ArrayList<String> ngrams(int n, ArrayList<String> words) {
@@ -297,12 +329,20 @@ public class TextParser extends JFrame
         }
     }
 
-    private void SortWordsByFrequency(ArrayList<String> source, ArrayList<Word> output)
+    private void SortWordsByFrequency(ArrayList<String> source, ArrayList<Word> output, Map<String, ArrayList<String>> nmap, int n)
     {
         Map<String, Word> countMap = new HashMap<String, Word>();
 
-        for(String word : source)
-        {
+        for (int i = 0; i < source.size(); i++) {
+            String word = source.get(i);
+            ArrayList<String> possibleList = nmap.get(word);
+            if (possibleList == null) {
+                possibleList = new ArrayList<>();
+                nmap.put(word, possibleList);
+            }
+            if (i+n < source.size() - 1)
+                possibleList.add(source.get(i+n));
+
             Word wordObj = countMap.get(word);
             if (wordObj == null) {
                 wordObj = new Word();
@@ -310,8 +350,10 @@ public class TextParser extends JFrame
                 wordObj.count = 0;
                 countMap.put(word, wordObj);
             }
-
             wordObj.count++;
+
+
+
         }
 
         //This is done because creating a new ArrayList dereferences the original pointer.
@@ -333,15 +375,67 @@ public class TextParser extends JFrame
 
     }
 
-    public void ConstructRandomSentence(ArrayList<Word> source, JTextArea ta)
+    public void ConstructRandomSentence(ArrayList<String> source, Map<String, ArrayList<String>> nmap, JTextArea ta, int numOfWords)
     {
+        String current = GetRandomStringFromList(source);
+        String output = current;
+        String[] temp = current.split(" +");
+        for (int i = 0; i < numOfWords / temp.length; i++)
+        {
+            ArrayList<String> possibleList = nmap.get(current);
+            if (possibleList != null) {
+                String next = GetRandomStringFromList(possibleList);
+                output += " " + next;
+                current = next;
+            }
 
+        }
+        output=output.replaceAll(SENTENCE_END_TOKEN,"\\.");
+        ta.append(output);
+        //ta.append("\n");
+    }
+
+    private String GetRandomStringFromList(ArrayList<String> list)
+    {
+        //list.forEach(System.out::println);
+        Random rand = new Random();
+        int i = rand.nextInt(list.size());
+        //System.out.println(list.get(i));
+        return list.get(i);
+    }
+
+    //http://stackoverflow.com/questions/1066589/iterate-through-a-hashmap
+    public static void printMap(Map mp) {
+        Iterator it = mp.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            System.out.println(pair.getKey() + " = " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
+
+    public void CalculatePerplexity(ArrayList<String> source, ArrayList<Word> sortedFrequency, JLabel label, String base)
+    {
+        double probability = 1;
+        int perplexity = 0;
+        double totalValues = source.size();
+
+        for (Word word : sortedFrequency)
+        {
+            probability *= ((double)word.count / totalValues);
+            System.out.println(probability);
+        }
+
+        perplexity = (int)Math.pow(probability, (-1d / totalValues));
+
+        label.setText(base + perplexity);
     }
 
     public class Word implements Comparable<Word>
     {
         String word;
         int count;
+
 
         public Word(){}
         public Word(Word wd)
