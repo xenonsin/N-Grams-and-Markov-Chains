@@ -38,20 +38,25 @@ public class TextParser extends JFrame
     private JTextArea taBigramSample;
     private JTextArea taTrigramSample;
 
-    private String SENTENCE_END_TOKEN = " KLK";
+    private String SENTENCE_END_TOKEN = " KLK ";
 
     private ArrayList<String> wordsArray = new ArrayList<>();
     private ArrayList<Word> sortedWordsByFrequencyArray = new ArrayList<>();
     Map<String, ArrayList<String>> unigramMap = new HashMap<>();
+    Map<String, Word> unigramCountMap = new HashMap<>();
 
 
     private ArrayList<String> bigramArray = new ArrayList<>();
     private ArrayList<Word> sortedBigramByFrequencyArray = new ArrayList<>();
     Map<String, ArrayList<String>> bigramMap = new HashMap<>();
+    Map<String, Word> bigramCountMap = new HashMap<>();
+
 
     private ArrayList<String> trigramArray = new ArrayList<>();
     private ArrayList<Word> sortedTrigramByFrequencyArray = new ArrayList<>();
     Map<String, ArrayList<String>> trigramMap = new HashMap<>();
+    Map<String, Word> trigramCountMap = new HashMap<>();
+
 
     private JFileChooser fc;
 
@@ -231,12 +236,12 @@ public class TextParser extends JFrame
             }
             GetWordCount();
             GetLongestWord();
-            SortWordsByFrequency(wordsArray, sortedWordsByFrequencyArray, unigramMap, 1);
+            SortWordsByFrequency(wordsArray, sortedWordsByFrequencyArray, unigramMap, unigramCountMap, 1);
             GetMostUsedWord();
             GetDistinctWordCount();
             AppendToTextArea(sortedWordsByFrequencyArray, taUnigramFrequency);
             ConstructRandomSentence(wordsArray, unigramMap, taUnigramSample, 100);
-            CalculatePerplexity(wordsArray,sortedWordsByFrequencyArray,taUnigramPerplexity,"Unigram Perplexity: ");
+            CalculateUnigramPerplexity(wordsArray,sortedWordsByFrequencyArray,taUnigramPerplexity,"Unigram Perplexity: ");
 
             //printMap(unigramMap);
             //wordsArray.forEach(System.out::println);
@@ -252,10 +257,10 @@ public class TextParser extends JFrame
     private void ParseBigram()
     {
         bigramArray = ngrams(2, wordsArray);
-        SortWordsByFrequency(bigramArray, sortedBigramByFrequencyArray, bigramMap, 2);
+        SortWordsByFrequency(bigramArray, sortedBigramByFrequencyArray, bigramMap, bigramCountMap, 2);
         AppendToTextArea(sortedBigramByFrequencyArray, taBigramFrequency);
         ConstructRandomSentence(bigramArray, bigramMap, taBigramSample, 100);
-        //CalculatePerplexity(bigramArray, sortedBigramByFrequencyArray, taBigramPerplexity, "Bigram Perplexity: ");
+        CalculateBiGramPerplexity(unigramCountMap, sortedBigramByFrequencyArray, taBigramPerplexity, "Bigram Perplexity: ");
 
         //printMap(bigramMap);
         //bigramArray.forEach(System.out::println);
@@ -264,10 +269,10 @@ public class TextParser extends JFrame
     private void ParseTrigram()
     {
         trigramArray = ngrams(3, wordsArray);
-        SortWordsByFrequency(trigramArray, sortedTrigramByFrequencyArray, trigramMap, 3);
+        SortWordsByFrequency(trigramArray, sortedTrigramByFrequencyArray, trigramMap, trigramCountMap, 3);
         AppendToTextArea(sortedTrigramByFrequencyArray, taTrigramFrequency);
         ConstructRandomSentence(trigramArray, trigramMap, taTrigramSample, 100);
-        //CalculatePerplexity(trigramArray, sortedTrigramByFrequencyArray, taTrigramPerplexity, "Trigram Perplexity: ");
+        CalculateTriGramPerplexity(bigramCountMap, sortedTrigramByFrequencyArray, taTrigramPerplexity, "Trigram Perplexity: ");
 
         //printMap(trigramMap);
     }
@@ -330,19 +335,23 @@ public class TextParser extends JFrame
         }
     }
 
-    private void SortWordsByFrequency(ArrayList<String> source, ArrayList<Word> output, Map<String, ArrayList<String>> nmap, int n)
+    private void SortWordsByFrequency(ArrayList<String> source, ArrayList<Word> output, Map<String, ArrayList<String>> nmap, Map<String, Word> countMap, int n)
     {
-        Map<String, Word> countMap = new HashMap<String, Word>();
+
 
         for (int i = 0; i < source.size(); i++) {
             String word = source.get(i);
-            ArrayList<String> possibleList = nmap.get(word);
-            if (possibleList == null) {
-                possibleList = new ArrayList<>();
-                nmap.put(word, possibleList);
-            }
+
             if (i+n < source.size() - 1)
-                possibleList.add(source.get(i+n));
+            {
+                ArrayList<String> possibleList = nmap.get(word);
+                if (possibleList == null) {
+                    possibleList = new ArrayList<>();
+                    nmap.put(word, possibleList);
+                }
+
+                possibleList.add(source.get(i + n));
+            }
 
             Word wordObj = countMap.get(word);
             if (wordObj == null) {
@@ -384,11 +393,13 @@ public class TextParser extends JFrame
         for (int i = 0; i < numOfWords / temp.length; i++)
         {
             ArrayList<String> possibleList = nmap.get(current);
+
             if (possibleList != null) {
                 String next = GetRandomStringFromList(possibleList);
                 output += " " + next;
                 current = next;
             }
+
 
         }
         output=output.replaceAll(SENTENCE_END_TOKEN,"\\.");
@@ -416,10 +427,10 @@ public class TextParser extends JFrame
         }
     }
 
-    public void CalculatePerplexity(ArrayList<String> source, ArrayList<Word> sortedFrequency, JLabel label, String base)
+    public void CalculateUnigramPerplexity(ArrayList<String> source, ArrayList<Word> sortedFrequency, JLabel label, String base)
     {
         double probability = 0;
-        int perplexity = 0;
+        double perplexity = 0;
         double totalValues = source.size();
 
         for (Word word : sortedFrequency)
@@ -427,12 +438,63 @@ public class TextParser extends JFrame
             probability += Math.log(word.count/totalValues);
         }
 
-        //BigDecimal a = new BigDecimal(Math.exp(probability));
+        probability *= (-1/totalValues);
+        //System.out.println(probability);
+
+        perplexity = Math.exp(probability);
+
+        label.setText(base + perplexity);
+    }
+
+    public void CalculateBiGramPerplexity(Map<String,Word> unigramCountMap, ArrayList<Word> biSortedFrequency, JLabel label, String base)
+    {
+        double probability = 0;
+        double perplexity = 0;
+        double totalValues = wordsArray.size();
+
+        for (Word word : biSortedFrequency)
+        {
+            String [] temp = word.word.split(" +");
+            int unigramCount = unigramCountMap.get(temp[0]).count;
+            probability += Math.log(word.count/unigramCount);
+        }
 
         probability *= (-1/totalValues);
         //System.out.println(probability);
 
-        perplexity = (int)Math.pow(10, probability);
+        perplexity = Math.exp(probability);
+
+        label.setText(base + perplexity);
+    }
+
+    public void CalculateTriGramPerplexity(Map<String,Word> bigramCountMap, ArrayList<Word> triSortedFrequency, JLabel label, String base)
+    {
+        double probability = 0;
+        double perplexity = 0;
+        double totalValues = wordsArray.size();
+
+        for (Word word : triSortedFrequency)
+        {
+            String [] temp = word.word.split(" +");
+            String out = temp[0] + " " + temp[1];
+            //System.out.println(out);
+            Word wordObj = bigramCountMap.get(out);
+
+            if (wordObj != null) {
+               int bigramCount = wordObj.count;
+
+                probability += Math.log(word.count / bigramCount);
+                System.out.println(word.count );
+
+            }
+
+
+        }
+
+        probability *= (-1/totalValues);
+
+
+        perplexity = Math.exp(probability);
 
         label.setText(base + perplexity);
     }
